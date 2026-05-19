@@ -1,490 +1,475 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CGMS Property Dashboard</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2334c759'/><path d='M7 24V14l5-4 5 4v10z' fill='white'/><rect x='10' y='16' width='2' height='3' fill='%2334c759'/><rect x='14' y='16' width='2' height='3' fill='%2334c759'/><path d='M19 24V10l6-4v18z' fill='white' opacity='.85'/><rect x='22' y='12' width='2' height='3' fill='%2334c759'/><rect x='22' y='17' width='2' height='3' fill='%2334c759'/></svg>" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f4;
-      color: #1c1c1e;
-      min-height: 100vh;
-      padding: 32px 24px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 32px;
-    }
-    .header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
-    .header-right { text-align: right; }
-    .header .date { font-size: 13px; color: #8e8e93; }
-    .header .as-of { font-size: 11px; color: #aeaeb2; margin-top: 2px; }
-    .section-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #8e8e93;
-      margin-bottom: 12px;
-    }
-    /* SUMMARY */
-    .summary-bar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 32px;
-    }
-    .summary-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px 20px;
-    }
-    .summary-card .label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #aeaeb2;
-      margin-bottom: 4px;
-    }
-    .summary-card .value {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.8px;
-      color: #1c1c1e;
-    }
-    .summary-card .sub { font-size: 12px; color: #8e8e93; margin-top: 2px; }
-    /* OCCUPANCY */
-    .occupancy-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-      gap: 9px;
-      margin-bottom: 36px;
-    }
-    .occ-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .occ-card .prop-name {
-      font-size: 11.5px;
-      font-weight: 500;
-      color: #636366;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .occ-card .occ-value {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.8px;
-      line-height: 1;
-    }
-    .occ-card .unit-count {
-      font-size: 11px;
-      font-weight: 500;
-      color: #8e8e93;
-      margin-top: 2px;
-    }
-    .unit-count .occupied { color: #34c759; font-weight: 600; }
-    .unit-count .vacant { color: #ff3b30; font-weight: 600; }
-    .occ-bar-bg {
-      height: 4px;
-      background: #e5e5ea;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .occ-bar-fill { height: 100%; border-radius: 99px; }
-    .tier-high .occ-value { color: #34c759; }
-    .tier-high .occ-bar-fill { background: #34c759; }
-    .tier-mid .occ-value { color: #ff9f0a; }
-    .tier-mid .occ-bar-fill { background: #ff9f0a; }
-    .tier-low .occ-value { color: #ff3b30; }
-    .tier-low .occ-bar-fill { background: #ff3b30; }
-    /* DELINQUENCY */
-    .delinquency-list {
-      background: #fff;
-      border-radius: 16px;
-      padding: 4px 24px 8px;
-    }
-    .delq-row {
-      display: grid;
-      grid-template-columns: 200px 1fr 130px;
-      align-items: center;
-      gap: 16px;
-      padding: 9px 0;
-      border-bottom: 1px solid #f2f2f7;
-    }
-    .delq-row:last-child { border-bottom: none; }
-    .delq-row.header-row {
-      padding: 12px 0 8px;
-      border-bottom: 1px solid #e5e5ea;
-    }
-    .delq-row.header-row span {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #aeaeb2;
-    }
-    .delq-row.header-row span:last-child { text-align: right; }
-    .delq-prop {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: #1c1c1e;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .delq-bar-wrap {
-      position: relative;
-      height: 18px;
-      background: #f2f2f7;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    .delq-bar-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      border-radius: 5px;
-    }
-    .fill-good { background: #34c759; }
-    .fill-warn { background: #ff9f0a; }
-    .fill-danger { background: #ff3b30; }
-    .delq-amounts { text-align: right; }
-    .delq-amounts .pct {
-      font-size: 13px;
-      font-weight: 700;
-      color: #1c1c1e;
-    }
-    .delq-amounts .dollars {
-      font-size: 11px;
-      color: #aeaeb2;
-    }
-    /* WATCHLIST */
-    .watchlist {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-bottom: 36px;
-    }
-    .watch-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      border-top: 3px solid #ff3b30;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .watch-card:first-child {
-      border-top-color: #c0392b;
-      background: #fff8f7;
-    }
-    .watch-rank {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #ff3b30;
-    }
-    .watch-card:first-child .watch-rank { color: #c0392b; }
-    .watch-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1c1c1e;
-      line-height: 1.3;
-    }
-    .watch-metrics {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .watch-metric {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-    }
-    .watch-metric .m-label { color: #8e8e93; }
-    .watch-metric .m-val {
-      font-weight: 600;
-      color: #1c1c1e;
-    }
-    .watch-metric .m-val.bad { color: #ff3b30; }
-    .watch-metric .m-val.warn { color: #ff9f0a; }
-    .watch-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 3px 8px;
-      border-radius: 99px;
-      background: #fff0ef;
-      color: #ff3b30;
-      align-self: flex-start;
-    }
-    .watch-tag.both { background: #fff0ef; color: #ff3b30; }
-    .watch-tag.occ { background: #fff6e5; color: #ff9f0a; }
-    .watch-tag.col { background: #fff6e5; color: #ff9f0a; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CGMS Property Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2334c759'/><path d='M7 24V14l5-4 5 4v10z' fill='white'/><rect x='10' y='16' width='2' height='3' fill='%2334c759'/><rect x='14' y='16' width='2' height='3' fill='%2334c759'/><path d='M19 24V10l6-4v18z' fill='white' opacity='.85'/><rect x='22' y='12' width='2' height='3' fill='%2334c759'/><rect x='22' y='17' width='2' height='3' fill='%2334c759'/></svg>" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f4;
+  color: #1c1c1e;
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+.header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+.header-right { text-align: right; }
+.header .date { font-size: 13px; color: #8e8e93; }
+.header .as-of { font-size: 11px; color: #aeaeb2; margin-top: 2px; }
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8e8e93;
+  margin-bottom: 12px;
+}
+/* SUMMARY */
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.summary-card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #aeaeb2;
+  margin-bottom: 4px;
+}
+.summary-card .value {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  color: #1c1c1e;
+}
+.summary-card .sub { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+/* OCCUPANCY */
+.occupancy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 9px;
+  margin-bottom: 36px;
+}
+.occ-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.occ-card .prop-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #636366;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.occ-card .occ-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+.occ-card .unit-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8e8e93;
+  margin-top: 2px;
+}
+.unit-count .occupied { color: #34c759; font-weight: 600; }
+.unit-count .vacant { color: #ff3b30; font-weight: 600; }
+.occ-bar-bg {
+  height: 4px;
+  background: #e5e5ea;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.occ-bar-fill { height: 100%; border-radius: 99px; }
+.tier-high .occ-value { color: #34c759; }
+.tier-high .occ-bar-fill { background: #34c759; }
+.tier-mid .occ-value { color: #ff9f0a; }
+.tier-mid .occ-bar-fill { background: #ff9f0a; }
+.tier-low .occ-value { color: #ff3b30; }
+.tier-low .occ-bar-fill { background: #ff3b30; }
+/* DELINQUENCY */
+.delinquency-list {
+  background: #fff;
+  border-radius: 16px;
+  padding: 4px 24px 8px;
+}
+.delq-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 130px;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f2f2f7;
+}
+.delq-row:last-child { border-bottom: none; }
+.delq-row.header-row {
+  padding: 12px 0 8px;
+  border-bottom: 1px solid #e5e5ea;
+}
+.delq-row.header-row span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #aeaeb2;
+}
+.delq-row.header-row span:last-child { text-align: right; }
+.delq-prop {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1c1c1e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.delq-bar-wrap {
+  position: relative;
+  height: 18px;
+  background: #f2f2f7;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.delq-bar-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  border-radius: 5px;
+}
+.fill-good { background: #34c759; }
+.fill-warn { background: #ff9f0a; }
+.fill-danger { background: #ff3b30; }
+.delq-amounts { text-align: right; }
+.delq-amounts .pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+.delq-amounts .dollars {
+  font-size: 11px;
+  color: #aeaeb2;
+}
+/* WATCHLIST */
+.watchlist {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 36px;
+}
+.watch-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border-top: 3px solid #ff3b30;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.watch-card:first-child {
+  border-top-color: #c0392b;
+  background: #fff8f7;
+}
+.watch-rank {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ff3b30;
+}
+.watch-card:first-child .watch-rank { color: #c0392b; }
+.watch-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1c1e;
+  line-height: 1.3;
+}
+.watch-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.watch-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.watch-metric .m-label { color: #8e8e93; }
+.watch-metric .m-val {
+  font-weight: 600;
+  color: #1c1c1e;
+}
+.watch-metric .m-val.bad { color: #ff3b30; }
+.watch-metric .m-val.warn { color: #ff9f0a; }
+.watch-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: #fff0ef;
+  color: #ff3b30;
+  align-self: flex-start;
+}
+.watch-tag.both { background: #fff0ef; color: #ff3b30; }
+.watch-tag.occ { background: #fff6e5; color: #ff9f0a; }
+.watch-tag.col { background: #fff6e5; color: #ff9f0a; }
+</style>
 </head>
 <body>
-  <div class="header">
-    <h1>CGMS Property Dashboard</h1>
-    <div class="header-right">
-      <div class="date">May 2026</div>
-      <div class="as-of" id="as-of"></div>
-    </div>
+<div class="header">
+  <h1>CGMS Property Dashboard</h1>
+  <div class="header-right">
+    <div class="date">May 2026</div>
+    <div class="as-of" id="as-of"></div>
   </div>
-
-  <div class="summary-bar" id="summary"></div>
-
-  <div class="section-title">Watchlist — 5 Properties Needing Attention</div>
-  <div class="watchlist" id="watchlist"></div>
-
-  <div class="section-title">Occupancy — May 2026</div>
-  <div class="occupancy-grid" id="occ-grid"></div>
-
-  <div class="section-title">Monthly Collection Progress — May 2026</div>
-  <div class="delinquency-list">
-    <div class="delq-row header-row">
-      <span>Property</span>
-      <span>Progress</span>
-      <span style="text-align:right">Collected / Charged</span>
-    </div>
-    <div id="delq-list"></div>
+</div>
+<div class="summary-bar" id="summary"></div>
+<div class="section-title">Watchlist — 5 Properties Needing Attention</div>
+<div class="watchlist" id="watchlist"></div>
+<div class="section-title">Occupancy — May 2026</div>
+<div class="occupancy-grid" id="occ-grid"></div>
+<div class="section-title">Monthly Collection Progress — May 2026</div>
+<div class="delinquency-list">
+  <div class="delq-row header-row">
+    <span>Property</span>
+    <span>Progress</span>
+    <span style="text-align:right">Collected / Charged</span>
   </div>
-
-  <script>
-    if (window.__dashboardRendered) throw 'already rendered';
-    window.__dashboardRendered = true;
-
-    // ── OCCUPANCY DATA (May 2026 Ending Occupancy) ──────────────────────────
-    // Source: 20260516_Daily Occupancy Dashboard.csv, week of 05/11/2026 Ending Occupancy
-    // total = total unit count for property
-    const occupancy = [
-      { name: "Aspen Hills", occ: 0.9877, total: 162 },
-      { name: "Avery Park Apartments", occ: 0.9462, total: 112 },
-      { name: "Bent Creek Apartments", occ: 0.9302, total: 86 },
-      { name: "Braewood", occ: 0.9868, total: 76 },
-      { name: "Briarcliff South", occ: 0.8173, total: 104 },
-      { name: "Collier Village Apartments", occ: 1.0000, total: 100 },
-      { name: "Colonial Village Apartments", occ: 0.8750, total: 40 },
-      { name: "Countryside Village Apartments", occ: 0.9868, total: 76 },
-      { name: "Coves at Yale", occ: 0.9945, total: 182 },
-      { name: "Deerfield Apartments", occ: 0.9632, total: 136 },
-      { name: "Fairbrook", occ: 0.8636, total: 44 },
-      { name: "Fairway", occ: 0.9565, total: 69 },
-      { name: "Foxhaven Apartments", occ: 1.0000, total: 96 },
-      { name: "Hickory Forest", occ: 0.9522, total: 229 },
-      { name: "Hickory Hills", occ: 0.9688, total: 96 },
-      { name: "Hickory Pointe", occ: 0.9333, total: 160 },
-      { name: "High Grove Apartments", occ: 0.8800, total: 100 },
-      { name: "Hunter Oaks Apartments", occ: 0.9474, total: 63 },
-      { name: "Jackson Heights Residential", occ: 0.9545, total: 66 },
-      { name: "Lexington Apartments", occ: 0.9111, total: 90 },
-      { name: "Linden Colonial", occ: 0.9444, total: 108 },
-      { name: "Meadow Creek (Sykes)", occ: 1.0000, total: 104 },
-      { name: "Meadows West Memphis", occ: 0.9583, total: 120 },
-      { name: "Meadows of Memphis Apartments", occ: 0.9750, total: 200 },
-      { name: "Pines Apartments", occ: 1.0000, total: 80 },
-      { name: "Raleigh Court Townhomes", occ: 1.0000, total: 59 },
-      { name: "Ridgeway Pines Townhomes", occ: 1.0000, total: 86 },
-      { name: "Ridgewyck Townhomes", occ: 0.9583, total: 120 },
-      { name: "Rivergrove", occ: 0.9825, total: 172 },
-      { name: "Shadowbrook Townhomes", occ: 0.8989, total: 417 },
-      { name: "Shadowood Apartments", occ: 0.8750, total: 80 },
-      { name: "The Glen Townhomes", occ: 0.9710, total: 138 },
-      { name: "Trails at Northpointe", occ: 0.9861, total: 96 },
-      { name: "Village of Sycamore Ridge", occ: 0.9474, total: 114 },
-      { name: "Willow Glen", occ: 0.8750, total: 24 },
-      { name: "Windsor Place", occ: 1.0000, total: 118 },
-      { name: "Woodlake Apartments", occ: 0.9672, total: 122 },
-    ];
-
-    // ── DELINQUENCY DATA (May 2026) ─────────────────────────────────────────
-    // Source: 20260516_Daily Delinquency Dashboard.csv
-    // charged = Current Year - Total Charges
-    // collected = Current Year - Collections
-    // pct = Current Year - % Collected
-    const delinquency = [
-      { name: "Aspen Hills", charged: 259210.04, collected: 233804.16, pct: 0.9660 },
-      { name: "Avery Park Apartments", charged: 211241.08, collected: 157060.07, pct: 0.7515 },
-      { name: "Bent Creek Apartments", charged: 82716.45, collected: 67767.88, pct: 0.8327 },
-      { name: "Braewood", charged: 114329.00, collected: 107542.63, pct: 0.9850 },
-      { name: "Briarcliff South", charged: 74184.00, collected: 51583.94, pct: 0.7049 },
-      { name: "Collier Village Apartments", charged: 127347.75, collected: 115229.70, pct: 0.9173 },
-      { name: "Colonial Village Apartments", charged: 34448.45, collected: 25189.95, pct: 0.7374 },
-      { name: "Countryside Village Apartments", charged: 87458.82, collected: 74943.00, pct: 0.8642 },
-      { name: "Coves at Yale", charged: 161004.95, collected: 143153.25, pct: 0.9063 },
-      { name: "Deerfield Apartments", charged: 144447.10, collected: 113472.50, pct: 0.8063 },
-      { name: "Fairbrook", charged: 55210.18, collected: 51141.31, pct: 0.9968 },
-      { name: "Fairway", charged: 61671.20, collected: 48332.35, pct: 0.7957 },
-      { name: "Foxhaven Apartments", charged: 103472.90, collected: 88301.65, pct: 0.8620 },
-      { name: "Hickory Forest", charged: 254083.00, collected: 196542.67, pct: 0.7825 },
-      { name: "Hickory Hills", charged: 88007.30, collected: 66476.54, pct: 0.7838 },
-      { name: "Hickory Pointe", charged: 232728.47, collected: 156533.91, pct: 0.6993 },
-      { name: "High Grove Apartments", charged: 110916.10, collected: 103108.25, pct: 0.9461 },
-      { name: "Hunter Oaks Apartments", charged: 75502.35, collected: 53690.10, pct: 0.7261 },
-      { name: "Jackson Heights Residential", charged: 75605.15, collected: 51669.07, pct: 0.6982 },
-      { name: "Lexington Apartments", charged: 78798.85, collected: 51148.63, pct: 0.6721 },
-      { name: "Linden Colonial", charged: 147614.64, collected: 145344.27, pct: 0.9989 },
-      { name: "Meadow Creek (Sykes)", charged: 93475.10, collected: 67288.32, pct: 0.7398 },
-      { name: "Meadows West Memphis", charged: 114599.20, collected: 95048.16, pct: 0.8431 },
-      { name: "Meadows of Memphis Apartments", charged: 239292.40, collected: 200438.16, pct: 0.8490 },
-      { name: "Pines Apartments", charged: 87046.60, collected: 71581.90, pct: 0.8965 },
-      { name: "Raleigh Court Townhomes", charged: 70588.65, collected: 58917.26, pct: 0.8447 },
-      { name: "Ridgeway Pines Townhomes", charged: 86669.55, collected: 71746.31, pct: 0.8643 },
-      { name: "Ridgewyck Townhomes", charged: 141372.20, collected: 113735.27, pct: 0.8463 },
-      { name: "Rivergrove", charged: 181473.57, collected: 127784.03, pct: 0.7388 },
-      { name: "Shadowbrook Townhomes", charged: 319931.97, collected: 218138.88, pct: 0.6899 },
-      { name: "Shadowood Apartments", charged: 83325.80, collected: 80896.85, pct: 0.9806 },
-      { name: "The Glen Townhomes", charged: 156674.89, collected: 145918.04, pct: 0.9470 },
-      { name: "Trails at Northpointe", charged: 152102.81, collected: 132738.01, pct: 0.8834 },
-      { name: "Village of Sycamore Ridge", charged: 131606.60, collected: 117351.70, pct: 0.9420 },
-      { name: "Willow Glen", charged: 28977.98, collected: 27384.35, pct: 0.9948 },
-      { name: "Windsor Place", charged: 95141.50, collected: 72364.89, pct: 0.7703 },
-      { name: "Woodlake Apartments", charged: 99399.90, collected: 93044.28, pct: 0.9446 },
-    ];
-
-    // ── HELPERS ───────────────────────────────────────────────────────────────
-    const pct = n => (n * 100).toFixed(1) + '%';
-    const fmt = n => '$' + Math.round(n).toLocaleString();
-
-    function tierClass(o) {
-      if (o >= 0.93) return 'tier-high';
-      if (o >= 0.85) return 'tier-mid';
-      return 'tier-low';
-    }
-    function fillClass(p) {
-      if (p >= 0.90) return 'fill-good';
-      if (p >= 0.75) return 'fill-warn';
-      return 'fill-danger';
-    }
-    function unitInfo(p) {
-      const occupied = Math.round(p.total * p.occ);
-      const vacant = p.total - occupied;
-      return `<span class="unit-count"><span class="occupied">${occupied}</span> occupied · <span class="vacant">${vacant}</span> vacant</span>`;
-    }
-
-    // ── AS OF TIMESTAMP ───────────────────────────────────────────────────────
-    const now = new Date();
-    const asOfStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-                    + ' at ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    document.getElementById('as-of').textContent = 'Data as of ' + asOfStr;
-
-    // ── SUMMARY ───────────────────────────────────────────────────────────────
-    const avgOcc = occupancy.reduce((s, p) => s + p.occ, 0) / occupancy.length;
-    const totalCharged = delinquency.reduce((s, p) => s + p.charged, 0);
-    const totalCollected = delinquency.reduce((s, p) => s + p.collected, 0);
-    const totalOutstanding = totalCharged - totalCollected;
-    const portfolioPct = totalCollected / totalCharged;
-
-    document.getElementById('summary').innerHTML = `
-      <div class="summary-card">
-        <div class="label">Portfolio Occupancy</div>
-        <div class="value">${pct(avgOcc)}</div>
-        <div class="sub">across ${occupancy.length} properties</div>
+  <div id="delq-list"></div>
+</div>
+<script>
+if (window.__dashboardRendered) throw 'already rendered';
+window.__dashboardRendered = true;
+// ── OCCUPANCY DATA (May 2026 Ending Occupancy) ──────────────────────────
+// Source: Daily Occupancy Dashboard.csv
+// total = total unit count for property
+const occupancy = [
+  { name: "Aspen Hills", occ: 0.9938, total: 162 },
+  { name: "Avery Park Apartments", occ: 0.9507, total: 112 },
+  { name: "Bent Creek Apartments", occ: 0.9302, total: 86 },
+  { name: "Braewood", occ: 1.0000, total: 76 },
+  { name: "Briarcliff South", occ: 0.8077, total: 104 },
+  { name: "Collier Village Apartments", occ: 1.0000, total: 100 },
+  { name: "Colonial Village Apartments", occ: 0.8750, total: 40 },
+  { name: "Countryside Village Apartments", occ: 0.9868, total: 76 },
+  { name: "Coves at Yale", occ: 0.9890, total: 182 },
+  { name: "Deerfield Apartments", occ: 0.9632, total: 136 },
+  { name: "Fairbrook", occ: 0.8636, total: 44 },
+  { name: "Fairway", occ: 0.9565, total: 69 },
+  { name: "Foxhaven Apartments", occ: 1.0000, total: 96 },
+  { name: "Hickory Forest", occ: 0.9478, total: 229 },
+  { name: "Hickory Hills", occ: 0.9688, total: 96 },
+  { name: "Hickory Pointe", occ: 0.9333, total: 160 },
+  { name: "High Grove Apartments", occ: 0.8800, total: 100 },
+  { name: "Hunter Oaks Apartments", occ: 0.9474, total: 63 },
+  { name: "Jackson Heights Residential", occ: 0.9545, total: 66 },
+  { name: "Lexington Apartments", occ: 0.9111, total: 90 },
+  { name: "Linden Colonial", occ: 0.9444, total: 108 },
+  { name: "Meadow Creek (Sykes)", occ: 1.0000, total: 104 },
+  { name: "Meadows West Memphis", occ: 0.9583, total: 120 },
+  { name: "Meadows of Memphis Apartments", occ: 0.9750, total: 200 },
+  { name: "Pines Apartments", occ: 1.0000, total: 80 },
+  { name: "Raleigh Court Townhomes", occ: 1.0000, total: 59 },
+  { name: "Ridgeway Pines Townhomes", occ: 1.0000, total: 86 },
+  { name: "Ridgewyck Townhomes", occ: 0.9667, total: 120 },
+  { name: "Rivergrove", occ: 0.9825, total: 172 },
+  { name: "Shadowbrook Townhomes", occ: 0.8989, total: 417 },
+  { name: "Shadowood Apartments", occ: 0.8875, total: 80 },
+  { name: "The Glen Townhomes", occ: 0.9710, total: 138 },
+  { name: "Trails at Northpointe", occ: 0.9861, total: 96 },
+  { name: "Village of Sycamore Ridge", occ: 0.9474, total: 114 },
+  { name: "Willow Glen", occ: 0.9167, total: 24 },
+  { name: "Windsor Place", occ: 1.0000, total: 118 },
+  { name: "Woodlake Apartments", occ: 0.9672, total: 122 },
+];
+// ── DELINQUENCY DATA (May 2026) ─────────────────────────────────────────
+// Source: Daily Delinquency Dashboard.csv
+// charged = Current Year - Total Charges
+// collected = Current Year - Collections
+// pct = Current Year - % Collected
+const delinquency = [
+  { name: "Aspen Hills", charged: 259306.79, collected: 233804.16, pct: 0.9656 },
+  { name: "Avery Park Apartments", charged: 214891.08, collected: 162018.97, pct: 0.7727 },
+  { name: "Bent Creek Apartments", charged: 82716.45, collected: 68497.88, pct: 0.8417 },
+  { name: "Braewood", charged: 115301.00, collected: 108339.63, pct: 0.9836 },
+  { name: "Briarcliff South", charged: 72582.00, collected: 53598.99, pct: 0.7488 },
+  { name: "Collier Village Apartments", charged: 127347.75, collected: 115648.70, pct: 0.9206 },
+  { name: "Colonial Village Apartments", charged: 34448.45, collected: 25689.95, pct: 0.7520 },
+  { name: "Countryside Village Apartments", charged: 87458.82, collected: 78323.00, pct: 0.9032 },
+  { name: "Coves at Yale", charged: 161869.95, collected: 146019.25, pct: 0.9200 },
+  { name: "Deerfield Apartments", charged: 144447.10, collected: 116110.50, pct: 0.8250 },
+  { name: "Fairbrook", charged: 55210.18, collected: 51141.31, pct: 0.9968 },
+  { name: "Fairway", charged: 61671.20, collected: 48332.35, pct: 0.7957 },
+  { name: "Foxhaven Apartments", charged: 103472.90, collected: 90516.25, pct: 0.8836 },
+  { name: "Hickory Forest", charged: 254083.00, collected: 203296.99, pct: 0.8094 },
+  { name: "Hickory Hills", charged: 88947.30, collected: 66476.54, pct: 0.7850 },
+  { name: "Hickory Pointe", charged: 233618.47, collected: 158748.91, pct: 0.7095 },
+  { name: "High Grove Apartments", charged: 109496.10, collected: 103108.25, pct: 0.9586 },
+  { name: "Hunter Oaks Apartments", charged: 75702.35, collected: 53394.10, pct: 0.7202 },
+  { name: "Jackson Heights Residential", charged: 75605.15, collected: 52575.02, pct: 0.7115 },
+  { name: "Lexington Apartments", charged: 78798.85, collected: 55696.63, pct: 0.7318 },
+  { name: "Linden Colonial", charged: 147614.64, collected: 145344.27, pct: 0.9989 },
+  { name: "Meadow Creek (Sykes)", charged: 95580.10, collected: 68523.27, pct: 0.7449 },
+  { name: "Meadows West Memphis", charged: 114599.20, collected: 95048.16, pct: 0.8439 },
+  { name: "Meadows of Memphis Apartments", charged: 239292.40, collected: 202913.19, pct: 0.8594 },
+  { name: "Pines Apartments", charged: 87046.60, collected: 71581.90, pct: 0.8965 },
+  { name: "Raleigh Court Townhomes", charged: 70588.65, collected: 61252.76, pct: 0.8782 },
+  { name: "Ridgeway Pines Townhomes", charged: 86669.55, collected: 73333.31, pct: 0.8834 },
+  { name: "Ridgewyck Townhomes", charged: 142086.20, collected: 116268.42, pct: 0.8606 },
+  { name: "Rivergrove", charged: 181473.57, collected: 131920.03, pct: 0.7628 },
+  { name: "Shadowbrook Townhomes", charged: 319931.97, collected: 230353.33, pct: 0.7285 },
+  { name: "Shadowood Apartments", charged: 83881.80, collected: 80946.85, pct: 0.9802 },
+  { name: "The Glen Townhomes", charged: 156674.89, collected: 147776.04, pct: 0.9590 },
+  { name: "Trails at Northpointe", charged: 152133.10, collected: 133753.41, pct: 0.8901 },
+  { name: "Village of Sycamore Ridge", charged: 131606.60, collected: 118938.70, pct: 0.9547 },
+  { name: "Willow Glen", charged: 29703.98, collected: 27802.35, pct: 0.9946 },
+  { name: "Windsor Place", charged: 96131.50, collected: 74733.89, pct: 0.7960 },
+  { name: "Woodlake Apartments", charged: 99399.90, collected: 93332.28, pct: 0.9475 },
+];
+// ── HELPERS ───────────────────────────────────────────────────────────────
+const pct = n => (n * 100).toFixed(1) + '%';
+const fmt = n => '$' + Math.round(n).toLocaleString();
+function tierClass(o) {
+  if (o >= 0.93) return 'tier-high';
+  if (o >= 0.85) return 'tier-mid';
+  return 'tier-low';
+}
+function fillClass(p) {
+  if (p >= 0.90) return 'fill-good';
+  if (p >= 0.75) return 'fill-warn';
+  return 'fill-danger';
+}
+function unitInfo(p) {
+  const occupied = Math.round(p.total * p.occ);
+  const vacant = p.total - occupied;
+  return `<span class="unit-count"><span class="occupied">${occupied}</span> occupied · <span class="vacant">${vacant}</span> vacant</span>`;
+}
+// ── AS OF TIMESTAMP ───────────────────────────────────────────────────────
+const now = new Date();
+const asOfStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  + ' at ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+document.getElementById('as-of').textContent = 'Data as of ' + asOfStr;
+// ── SUMMARY ───────────────────────────────────────────────────────────────
+const avgOcc = occupancy.reduce((s, p) => s + p.occ, 0) / occupancy.length;
+const totalCharged = delinquency.reduce((s, p) => s + p.charged, 0);
+const totalCollected = delinquency.reduce((s, p) => s + p.collected, 0);
+const totalOutstanding = totalCharged - totalCollected;
+const portfolioPct = totalCollected / totalCharged;
+document.getElementById('summary').innerHTML = `
+  <div class="summary-card">
+    <div class="label">Portfolio Occupancy</div>
+    <div class="value">${pct(avgOcc)}</div>
+    <div class="sub">across ${occupancy.length} properties</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">Charges Posted</div>
+    <div class="value">${fmt(totalCharged)}</div>
+    <div class="sub">May 2026</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">Collected</div>
+    <div class="value">${fmt(totalCollected)}</div>
+    <div class="sub">${pct(portfolioPct)} of charges</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">Outstanding</div>
+    <div class="value">${fmt(totalOutstanding)}</div>
+    <div class="sub">${pct(1 - portfolioPct)} remaining</div>
+  </div>`;
+// ── WATCHLIST ───────────────────────────────────────────────────────────
+// Score each property: average of occupancy + collection %, lower = worse
+const scored = occupancy.map(op => {
+  const dp = delinquency.find(d => d.name === op.name);
+  const collPct = dp ? dp.pct : 1;
+  const score = (op.occ + collPct) / 2;
+  return { name: op.name, occ: op.occ, collPct, score };
+});
+const watchlist = scored.sort((a, b) => a.score - b.score).slice(0, 5);
+const wEl = document.getElementById('watchlist');
+const ranks = ['#1 Worst', '#2', '#3', '#4', '#5'];
+let watchHTML = '';
+watchlist.forEach((p, i) => {
+  const lowOcc = p.occ < 0.90;
+  const lowCol = p.collPct < 0.90;
+  const tagClass = (lowOcc && lowCol) ? 'both' : lowOcc ? 'occ' : 'col';
+  const tagText = (lowOcc && lowCol) ? 'Occ + Collections' : lowOcc ? 'Low Occupancy' : 'Low Collections';
+  const occClass = p.occ < 0.85 ? 'bad' : p.occ < 0.93 ? 'warn' : '';
+  const colClass = p.collPct < 0.80 ? 'bad' : p.collPct < 0.90 ? 'warn' : '';
+  watchHTML += `
+    <div class="watch-card">
+      <div class="watch-rank">${ranks[i]}</div>
+      <div class="watch-name">${p.name}</div>
+      <div class="watch-metrics">
+        <div class="watch-metric">
+          <span class="m-label">Occupancy</span>
+          <span class="m-val ${occClass}">${pct(p.occ)}</span>
+        </div>
+        <div class="watch-metric">
+          <span class="m-label">Collected</span>
+          <span class="m-val ${colClass}">${pct(p.collPct)}</span>
+        </div>
       </div>
-      <div class="summary-card">
-        <div class="label">Charges Posted</div>
-        <div class="value">${fmt(totalCharged)}</div>
-        <div class="sub">May 2026</div>
+      <span class="watch-tag ${tagClass}">${tagText}</span>
+    </div>`;
+});
+wEl.innerHTML = watchHTML;
+// ── OCCUPANCY CARDS ───────────────────────────────────────────────────────
+const grid = document.getElementById('occ-grid');
+const sortedOcc = [...occupancy].sort((a, b) => a.occ - b.occ);
+let occHTML = '';
+sortedOcc.forEach(p => {
+  const tier = tierClass(p.occ);
+  occHTML += `
+    <div class="occ-card ${tier}">
+      <div class="prop-name">${p.name}</div>
+      <div class="occ-value">${pct(p.occ)}</div>
+      <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:${p.occ*100}%"></div></div>
+      ${unitInfo(p)}
+    </div>`;
+});
+grid.innerHTML = occHTML;
+// ── DELINQUENCY BARS ──────────────────────────────────────────────────────
+// Sort: worst collection % first
+const sorted = [...delinquency].sort((a, b) => a.pct - b.pct);
+const list = document.getElementById('delq-list');
+let delqHTML = '';
+sorted.forEach(p => {
+  const fillPct = Math.round(p.pct * 100);
+  delqHTML += `
+    <div class="delq-row">
+      <div class="delq-prop">${p.name}</div>
+      <div class="delq-bar-wrap">
+        <div class="delq-bar-fill ${fillClass(p.pct)}" style="width:${fillPct}%"></div>
       </div>
-      <div class="summary-card">
-        <div class="label">Collected</div>
-        <div class="value">${fmt(totalCollected)}</div>
-        <div class="sub">${pct(portfolioPct)} of charges</div>
+      <div class="delq-amounts">
+        <div class="pct">${fillPct}% collected</div>
+        <div class="dollars">${fmt(p.collected)} / ${fmt(p.charged)}</div>
       </div>
-      <div class="summary-card">
-        <div class="label">Outstanding</div>
-        <div class="value">${fmt(totalOutstanding)}</div>
-        <div class="sub">${pct(1 - portfolioPct)} remaining</div>
-      </div>`;
-
-    // ── WATCHLIST ───────────────────────────────────────────────────────────
-    // Score each property: average of occupancy + collection %, lower = worse
-    const scored = occupancy.map(op => {
-      const dp = delinquency.find(d => d.name === op.name);
-      const collPct = dp ? dp.pct : 1;
-      const score = (op.occ + collPct) / 2;
-      return { name: op.name, occ: op.occ, collPct, score };
-    });
-    const watchlist = scored.sort((a, b) => a.score - b.score).slice(0, 5);
-    const wEl = document.getElementById('watchlist');
-    const ranks = ['#1 Worst', '#2', '#3', '#4', '#5'];
-    let watchHTML = '';
-    watchlist.forEach((p, i) => {
-      const lowOcc = p.occ < 0.90;
-      const lowCol = p.collPct < 0.90;
-      const tagClass = (lowOcc && lowCol) ? 'both' : lowOcc ? 'occ' : 'col';
-      const tagText = (lowOcc && lowCol) ? 'Occ + Collections' : lowOcc ? 'Low Occupancy' : 'Low Collections';
-      const occClass = p.occ < 0.85 ? 'bad' : p.occ < 0.93 ? 'warn' : '';
-      const colClass = p.collPct < 0.80 ? 'bad' : p.collPct < 0.90 ? 'warn' : '';
-      watchHTML += `
-        <div class="watch-card">
-          <div class="watch-rank">${ranks[i]}</div>
-          <div class="watch-name">${p.name}</div>
-          <div class="watch-metrics">
-            <div class="watch-metric">
-              <span class="m-label">Occupancy</span>
-              <span class="m-val ${occClass}">${pct(p.occ)}</span>
-            </div>
-            <div class="watch-metric">
-              <span class="m-label">Collected</span>
-              <span class="m-val ${colClass}">${pct(p.collPct)}</span>
-            </div>
-          </div>
-          <span class="watch-tag ${tagClass}">${tagText}</span>
-        </div>`;
-    });
-    wEl.innerHTML = watchHTML;
-
-    // ── OCCUPANCY CARDS ───────────────────────────────────────────────────────
-    const grid = document.getElementById('occ-grid');
-    const sortedOcc = [...occupancy].sort((a, b) => a.occ - b.occ);
-    let occHTML = '';
-    sortedOcc.forEach(p => {
-      const tier = tierClass(p.occ);
-      occHTML += `
-        <div class="occ-card ${tier}">
-          <div class="prop-name">${p.name}</div>
-          <div class="occ-value">${pct(p.occ)}</div>
-          <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:${p.occ*100}%"></div></div>
-          ${unitInfo(p)}
-        </div>`;
-    });
-    grid.innerHTML = occHTML;
-
-    // ── DELINQUENCY BARS ──────────────────────────────────────────────────────
-    // Sort: worst collection % first
-    const sorted = [...delinquency].sort((a, b) => a.pct - b.pct);
-    const list = document.getElementById('delq-list');
-    let delqHTML = '';
-    sorted.forEach(p => {
-      const fillPct = Math.round(p.pct * 100);
-      delqHTML += `
-        <div class="delq-row">
-          <div class="delq-prop">${p.name}</div>
-          <div class="delq-bar-wrap">
-            <div class="delq-bar-fill ${fillClass(p.pct)}" style="width:${fillPct}%"></div>
-          </div>
-          <div class="delq-amounts">
-            <div class="pct">${fillPct}% collected</div>
-            <div class="dollars">${fmt(p.collected)} / ${fmt(p.charged)}</div>
-          </div>
-        </div>`;
-    });
-    list.innerHTML = delqHTML;
-  </script>
+    </div>`;
+});
+list.innerHTML = delqHTML;
+</script>
 </body>
 </html>

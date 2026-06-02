@@ -241,16 +241,16 @@ body {
 <div class="header">
   <h1>CGMS Property Dashboard</h1>
   <div class="header-right">
-    <div class="date">May 2026</div>
+    <div class="date">June 2026</div>
     <div class="as-of" id="as-of"></div>
   </div>
 </div>
 <div class="summary-bar" id="summary"></div>
 <div class="section-title">Watchlist — 5 Properties Needing Attention</div>
 <div class="watchlist" id="watchlist"></div>
-<div class="section-title">Occupancy — May 2026</div>
+<div class="section-title">Occupancy — June 2026</div>
 <div class="occupancy-grid" id="occ-grid"></div>
-<div class="section-title">Monthly Collection Progress — May 2026</div>
+<div class="section-title">Monthly Collection Progress — June 2026</div>
 <div class="delinquency-list">
   <div class="delq-row header-row">
     <span>Property</span>
@@ -262,91 +262,91 @@ body {
 <script>
 if (window.__dashboardRendered) throw 'already rendered';
 window.__dashboardRendered = true;
-// ── OCCUPANCY DATA (May 2026 Ending Occupancy) ──────────────────────────
-// Source: 20260527_Daily Occupancy Dashboard.csv, week of 05/25/2026 Ending Occupancy
+// ── OCCUPANCY DATA (June 2026 Ending Occupancy) ──────────────────────────
+// Source: 20260601_Daily Occupancy Dashboard.csv, week of 06/01/2026 Ending Occupancy
 // total = total unit count for property
 const occupancy = [
-  { name: "Aspen Hills", occ: 1.0000, total: 162 },
-  { name: "Avery Park Apartments", occ: 0.9462, total: 112 },
+  { name: "Aspen Hills", occ: 0.9877, total: 162 },
+  { name: "Avery Park Apartments", occ: 0.9417, total: 112 },
   { name: "Bent Creek Apartments", occ: 0.9302, total: 86 },
   { name: "Braewood", occ: 0.9868, total: 76 },
   { name: "Briarcliff South", occ: 0.7981, total: 104 },
-  { name: "Collier Village Apartments", occ: 0.9800, total: 100 },
-  { name: "Colonial Village Apartments", occ: 0.8250, total: 40 },
+  { name: "Collier Village Apartments", occ: 0.9600, total: 100 },
+  { name: "Colonial Village Apartments", occ: 0.8500, total: 40 },
   { name: "Countryside Village Apartments", occ: 0.9868, total: 76 },
-  { name: "Coves at Yale", occ: 0.9835, total: 182 },
+  { name: "Coves at Yale", occ: 0.9780, total: 182 },
   { name: "Deerfield Apartments", occ: 0.9632, total: 136 },
-  { name: "Fairbrook", occ: 0.8864, total: 44 },
-  { name: "Fairway", occ: 0.9565, total: 69 },
-  { name: "Foxhaven Apartments", occ: 0.9792, total: 96 },
-  { name: "Hickory Forest", occ: 0.9391, total: 229 },
+  { name: "Fairbrook", occ: 0.9318, total: 44 },
+  { name: "Fairway", occ: 0.9420, total: 69 },
+  { name: "Foxhaven Apartments", occ: 1.0000, total: 96 },
+  { name: "Hickory Forest", occ: 0.9478, total: 229 },
   { name: "Hickory Hills", occ: 0.9688, total: 96 },
-  { name: "Hickory Pointe", occ: 0.9125, total: 160 },
+  { name: "Hickory Pointe", occ: 0.9250, total: 160 },
   { name: "High Grove Apartments", occ: 0.8900, total: 100 },
-  { name: "Hunter Oaks Apartments", occ: 0.9342, total: 63 },
+  { name: "Hunter Oaks Apartments", occ: 0.9474, total: 63 },
   { name: "Jackson Heights Residential", occ: 0.9545, total: 66 },
-  { name: "Lexington Apartments", occ: 0.9000, total: 90 },
-  { name: "Linden Colonial", occ: 0.9444, total: 108 },
-  { name: "Meadow Creek (Sykes)", occ: 0.9808, total: 104 },
-  { name: "Meadows West Memphis", occ: 0.9750, total: 120 },
-  { name: "Meadows of Memphis Apartments", occ: 0.9650, total: 200 },
-  { name: "Pines Apartments", occ: 0.9750, total: 80 },
+  { name: "Lexington Apartments", occ: 0.9111, total: 90 },
+  { name: "Linden Colonial", occ: 0.9630, total: 108 },
+  { name: "Meadow Creek (Sykes)", occ: 1.0000, total: 104 },
+  { name: "Meadows West Memphis", occ: 0.9833, total: 120 },
+  { name: "Meadows of Memphis Apartments", occ: 0.9700, total: 200 },
+  { name: "Pines Apartments", occ: 1.0000, total: 80 },
   { name: "Raleigh Court Townhomes", occ: 1.0000, total: 59 },
-  { name: "Ridgeway Pines Townhomes", occ: 1.0000, total: 86 },
-  { name: "Ridgewyck Townhomes", occ: 0.9500, total: 120 },
-  { name: "Rivergrove", occ: 0.9649, total: 172 },
-  { name: "Shadowbrook Townhomes", occ: 0.9016, total: 417 },
-  { name: "Shadowood Apartments", occ: 0.9125, total: 80 },
-  { name: "The Glen Townhomes", occ: 0.9710, total: 138 },
-  { name: "Trails at Northpointe", occ: 0.9861, total: 96 },
-  { name: "Village of Sycamore Ridge", occ: 0.9561, total: 114 },
+  { name: "Ridgeway Pines Townhomes", occ: 0.9884, total: 86 },
+  { name: "Ridgewyck Townhomes", occ: 0.9583, total: 120 },
+  { name: "Rivergrove", occ: 0.9766, total: 172 },
+  { name: "Shadowbrook Townhomes", occ: 0.9071, total: 417 },
+  { name: "Shadowood Apartments", occ: 0.8875, total: 80 },
+  { name: "The Glen Townhomes", occ: 0.9855, total: 138 },
+  { name: "Trails at Northpointe", occ: 0.9792, total: 96 },
+  { name: "Village of Sycamore Ridge", occ: 0.9649, total: 114 },
   { name: "Willow Glen", occ: 0.9583, total: 24 },
-  { name: "Windsor Place", occ: 0.9746, total: 118 },
-  { name: "Woodlake Apartments", occ: 0.9754, total: 122 }
+  { name: "Windsor Place", occ: 0.9831, total: 118 },
+  { name: "Woodlake Apartments", occ: 0.9672, total: 122 }
 ];
-// ── DELINQUENCY DATA (May 2026) ─────────────────────────────────────────
-// Source: 20260527_Daily Delinquency Dashboard.csv
+// ── DELINQUENCY DATA (June 2026) ─────────────────────────────────────────
+// Source: 20260601_Daily Delinquency Dashboard.csv
 // charged = Current Year - Total Charges
 // collected = Current Year - Collections
 // pct = Current Year - % Collected
 const delinquency = [
-  { name: "Aspen Hills", charged: 260114.79, collected: 237396.11, pct: 0.9776 },
-  { name: "Avery Park Apartments", charged: 216475.08, collected: 179518.47, pct: 0.8588 },
-  { name: "Bent Creek Apartments", charged: 85271.45, collected: 72815.83, pct: 0.8883 },
-  { name: "Braewood", charged: 115321.00, collected: 109681.88, pct: 0.9965 },
-  { name: "Briarcliff South", charged: 72582.00, collected: 57345.64, pct: 0.8020 },
-  { name: "Collier Village Apartments", charged: 127347.75, collected: 118491.75, pct: 0.9433 },
-  { name: "Colonial Village Apartments", charged: 33345.45, collected: 26654.60, pct: 0.8063 },
-  { name: "Countryside Village Apartments", charged: 87458.82, collected: 81349.50, pct: 0.9381 },
-  { name: "Coves at Yale", charged: 161677.95, collected: 150627.25, pct: 0.9529 },
-  { name: "Deerfield Apartments", charged: 144082.10, collected: 123325.15, pct: 0.8789 },
-  { name: "Fairbrook", charged: 54689.18, collected: 50463.31, pct: 0.9968 },
-  { name: "Fairway", charged: 62516.20, collected: 52867.30, pct: 0.8704 },
-  { name: "Foxhaven Apartments", charged: 103755.82, collected: 93234.49, pct: 0.9077 },
-  { name: "Hickory Forest", charged: 254509.00, collected: 216815.94, pct: 0.8618 },
-  { name: "Hickory Hills", charged: 88424.30, collected: 73359.44, pct: 0.8734 },
-  { name: "Hickory Pointe", charged: 237193.52, collected: 182921.63, pct: 0.8204 },
-  { name: "High Grove Apartments", charged: 110248.10, collected: 106599.20, pct: 0.9859 },
-  { name: "Hunter Oaks Apartments", charged: 76114.35, collected: 56551.06, pct: 0.7586 },
-  { name: "Jackson Heights Residential", charged: 75605.15, collected: 59724.85, pct: 0.8096 },
-  { name: "Lexington Apartments", charged: 78897.85, collected: 59272.62, pct: 0.7786 },
-  { name: "Linden Colonial", charged: 148252.64, collected: 145982.27, pct: 0.9989 },
-  { name: "Meadow Creek (Sykes)", charged: 95816.10, collected: 72463.97, pct: 0.7878 },
-  { name: "Meadows West Memphis", charged: 115549.20, collected: 100369.11, pct: 0.8845 },
-  { name: "Meadows of Memphis Apartments", charged: 239494.40, collected: 215549.99, pct: 0.9122 },
-  { name: "Pines Apartments", charged: 87216.60, collected: 73023.85, pct: 0.9098 },
-  { name: "Raleigh Court Townhomes", charged: 76218.65, collected: 61846.71, pct: 0.8944 },
-  { name: "Ridgeway Pines Townhomes", charged: 86858.05, collected: 77112.89, pct: 0.9269 },
-  { name: "Ridgewyck Townhomes", charged: 142086.20, collected: 123068.02, pct: 0.9116 },
-  { name: "Rivergrove", charged: 181005.57, collected: 148411.46, pct: 0.8618 },
-  { name: "Shadowbrook Townhomes", charged: 321525.97, collected: 276005.69, pct: 0.8686 },
-  { name: "Shadowood Apartments", charged: 83881.80, collected: 80946.85, pct: 0.9802 },
-  { name: "The Glen Townhomes", charged: 156674.89, collected: 150995.04, pct: 0.9799 },
-  { name: "Trails at Northpointe", charged: 152983.10, collected: 137133.80, pct: 0.9075 },
-  { name: "Village of Sycamore Ridge", charged: 133887.60, collected: 121677.70, pct: 0.9684 },
-  { name: "Willow Glen", charged: 30126.98, collected: 28230.35, pct: 0.9949 },
-  { name: "Windsor Place", charged: 94255.50, collected: 82743.52, pct: 0.8993 },
-  { name: "Woodlake Apartments", charged: 99776.90, collected: 94871.28, pct: 0.9595 }
+  { name: "Aspen Hills", charged: 248179.51, collected: 71724.47, pct: 0.3007 },
+  { name: "Avery Park Apartments", charged: 199498.75, collected: 12876.71, pct: 0.0646 },
+  { name: "Bent Creek Apartments", charged: 69702.45, collected: 5893.00, pct: 0.0846 },
+  { name: "Braewood", charged: 112947.84, collected: 35782.77, pct: 0.3255 },
+  { name: "Briarcliff South", charged: 68497.10, collected: 5476.14, pct: 0.0801 },
+  { name: "Collier Village Apartments", charged: 123156.75, collected: 3549.98, pct: 0.0288 },
+  { name: "Colonial Village Apartments", charged: 33104.30, collected: 2667.97, pct: 0.0807 },
+  { name: "Countryside Village Apartments", charged: 85350.00, collected: 6136.00, pct: 0.0719 },
+  { name: "Coves at Yale", charged: 155956.95, collected: 10536.69, pct: 0.0679 },
+  { name: "Deerfield Apartments", charged: 137544.05, collected: 8128.06, pct: 0.0592 },
+  { name: "Fairbrook", charged: 56665.57, collected: 24959.15, pct: 0.4709 },
+  { name: "Fairway", charged: 59237.25, collected: 5309.98, pct: 0.0896 },
+  { name: "Foxhaven Apartments", charged: 103529.60, collected: 10133.47, pct: 0.0985 },
+  { name: "Hickory Forest", charged: 245637.00, collected: 19699.67, pct: 0.0802 },
+  { name: "Hickory Hills", charged: 82852.30, collected: 6687.30, pct: 0.0809 },
+  { name: "Hickory Pointe", charged: 213138.10, collected: 11783.70, pct: 0.0554 },
+  { name: "High Grove Apartments", charged: 109978.90, collected: 11340.40, pct: 0.1037 },
+  { name: "Hunter Oaks Apartments", charged: 68230.20, collected: 6253.71, pct: 0.0920 },
+  { name: "Jackson Heights Residential", charged: 74373.55, collected: 4404.10, pct: 0.0593 },
+  { name: "Lexington Apartments", charged: 73161.00, collected: 6120.87, pct: 0.0848 },
+  { name: "Linden Colonial", charged: 152013.68, collected: 52986.25, pct: 0.3574 },
+  { name: "Meadow Creek (Sykes)", charged: 89202.90, collected: 8418.63, pct: 0.0944 },
+  { name: "Meadows West Memphis", charged: 115306.05, collected: 13812.18, pct: 0.1203 },
+  { name: "Meadows of Memphis Apartments", charged: 231660.40, collected: 12605.97, pct: 0.0544 },
+  { name: "Pines Apartments", charged: 79540.20, collected: 3657.40, pct: 0.0461 },
+  { name: "Raleigh Court Townhomes", charged: 65873.65, collected: 5510.00, pct: 0.0836 },
+  { name: "Ridgeway Pines Townhomes", charged: 79990.70, collected: 11560.40, pct: 0.1445 },
+  { name: "Ridgewyck Townhomes", charged: 132342.90, collected: 9767.75, pct: 0.0739 },
+  { name: "Rivergrove", charged: 167756.60, collected: 5195.55, pct: 0.0310 },
+  { name: "Shadowbrook Townhomes", charged: 305950.40, collected: 18591.83, pct: 0.0608 },
+  { name: "Shadowood Apartments", charged: 85791.60, collected: 6469.85, pct: 0.0760 },
+  { name: "The Glen Townhomes", charged: 156647.35, collected: 16474.86, pct: 0.1052 },
+  { name: "Trails at Northpointe", charged: 148272.80, collected: 12533.14, pct: 0.0853 },
+  { name: "Village of Sycamore Ridge", charged: 127291.60, collected: 5811.49, pct: 0.0466 },
+  { name: "Willow Glen", charged: 33029.82, collected: 8871.63, pct: 0.2964 },
+  { name: "Windsor Place", charged: 89846.60, collected: 8546.36, pct: 0.0953 },
+  { name: "Woodlake Apartments", charged: 97109.90, collected: 9518.36, pct: 0.0980 }
 ];
 // ── HELPERS ───────────────────────────────────────────────────────────────
 const pct = n => (n * 100).toFixed(1) + '%';
@@ -386,7 +386,7 @@ document.getElementById('summary').innerHTML = `
   <div class="summary-card">
     <div class="label">Charges Posted</div>
     <div class="value">${fmt(totalCharged)}</div>
-    <div class="sub">May 2026</div>
+    <div class="sub">June 2026</div>
   </div>
   <div class="summary-card">
     <div class="label">Collected</div>
